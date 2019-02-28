@@ -59,7 +59,27 @@ enum KSensorWait {
     //% block="Liniensensor links"
     lineLeft,
     //% block="Entfernung"
-    distance
+    distance,
+    //% block="Helligkeit"
+    brightness,
+    //% block="Temperatur"
+    temperature,
+    //% block="Kompass"
+    compass,
+    //% block="Magnetkraft"
+    magnet,
+    //% block="Rotation"
+    rotation,
+    //% block="Rollen"
+    roll,
+    //% block="Beschleunigung X"
+    accellX,
+    //% block="Beschleunigung Y"
+    accellY,
+    //% block="Beschleunigung Z"
+    accellZ,
+    //% block="Beschleunigung Stärke"
+    accellStrength
 }
 
 enum KCheck {
@@ -116,7 +136,7 @@ namespace Callibot {
         speed = speed * 255 / 100
         writeMotor(nr, direction, speed);
     }
-    
+
     //="Stoppe Motor $nr"
     //% blockId=K_motorStop block="Stoppe Motor |%nr| |%mode"
     export function motorStop(nr: KMotor, mode: KStop) {
@@ -127,7 +147,7 @@ namespace Callibot {
             writeMotor(nr, 0, 0);
         }
     }
-    
+
     //% blockId=K_SetLed block="Schalte LED |%KSensor| |%KState"
     export function setLed(led: KSensor, state: KState) {
         let buffer = pins.createBuffer(2);
@@ -261,40 +281,68 @@ namespace Callibot {
     export function warte(sensor: KSensorWait, check: KCheck, value: number) {
         let abbruch = 0
         let sensorValue = 0
-        while (abbruch ==0){
-            switch(sensor)
-            {
+        while (abbruch == 0) {
+            switch (sensor) {
                 case KSensorWait.distance:
                     sensorValue = entfernung()
-                break;
+                    break;
                 case KSensorWait.lineLeft:
                     if (readLineSensor(KSensor.links))
-                        sensorValue = 10000
+                        sensorValue = 1
                     else
                         sensorValue = 0
-                break;
+                    break;
                 case KSensorWait.lineRight:
                     if (readLineSensor(KSensor.rechts))
-                        sensorValue = 10000
+                        sensorValue = 1
                     else
                         sensorValue = 0
-                break;
+                    break;
+                case KSensorWait.accellStrength:
+                    sensorValue = input.acceleration(Dimension.Strength)
+                    break;
+                case KSensorWait.accellX:
+                    sensorValue = input.acceleration(Dimension.X)
+                    break;
+                case KSensorWait.accellY:
+                    sensorValue = input.acceleration(Dimension.Y)
+                    break;
+                case KSensorWait.accellZ:
+                    sensorValue = input.acceleration(Dimension.Z)
+                    break;
+                case KSensorWait.brightness:
+                    sensorValue = input.lightLevel()
+                    break;
+                case KSensorWait.compass:
+                    sensorValue = input.compassHeading()
+                    break;
+                case KSensorWait.magnet:
+                    sensorValue = input.magneticForce(Dimension.Strength)
+                    break;
+                case KSensorWait.roll:
+                    sensorValue = input.rotation(Rotation.Roll)
+                    break;
+                case KSensorWait.rotation:
+                    sensorValue = input.rotation(Rotation.Pitch)
+                    break;
+                case KSensorWait.temperature:
+                    sensorValue = input.temperature()
+                    break;
             }
 
-            switch(check)
-            {
+            switch (check) {
                 case KCheck.equal:
-                if (sensorValue == value)
-                    abbruch = 1
-                break;
+                    if (sensorValue == value)
+                        abbruch = 1
+                    break;
                 case KCheck.lessThan:
-                if (sensorValue < value)
-                    abbruch = 1
-                break;
+                    if (sensorValue < value)
+                        abbruch = 1
+                    break;
                 case KCheck.greaterThan:
-                if (sensorValue > value)
-                    abbruch = 1
-                break;
+                    if (sensorValue > value)
+                        abbruch = 1
+                    break;
             }
         }
     }
