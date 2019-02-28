@@ -21,15 +21,15 @@ enum KSensor {
 }
 
 enum KRgbLed {
-    //% block="Links vorne"
+    //% block="links vorne"
     LV,
-    //% block="Rechts vorne"
+    //% block="rechts vorne"
     RV,
-    //% block="Links hinten"
+    //% block="links hinten"
     LH,
-    //% block="Rechts hinten"
+    //% block="rechts hinten"
     RH,
-    //% block="Alle"
+    //% block="alle"
     All
 }
 
@@ -53,6 +53,23 @@ enum KState {
     an
 }
 
+enum KSensorWait {
+    //% block="Liniensensor rechts"
+    lineRight,
+    //% block="Liniensensor links"
+    lineLeft,
+    //% block="Entfernung"
+    distance
+}
+
+enum KCheck {
+    //% block="="
+    equal,
+    //% block="<"
+    lessThan,
+    //% block=">"
+    greaterThan
+}
 
 //% color="#ff0000" icon="\uf013"
 namespace Callibot {
@@ -238,5 +255,47 @@ namespace Callibot {
         let buffer = pins.i2cReadBuffer(0x21, 3);
         KInit();
         return 256 * buffer[1] + buffer[2];
+    }
+
+    //% blockId=K_warte block="Warte bis |%sensor| |%check| |%value"
+    export function warte(sensor: KSensorWait, check: KCheck, value: number) {
+        let abbruch = 0
+        let sensorValue = 0
+        while (abbruch ==0){
+            switch(sensor)
+            {
+                case KSensorWait.distance:
+                    sensorValue = entfernung()
+                break;
+                case KSensorWait.lineLeft:
+                    if (readLineSensor(KSensor.links))
+                        sensorValue = 10000
+                    else
+                        sensorValue = 0
+                break;
+                case KSensorWait.lineRight:
+                    if (readLineSensor(KSensor.rechts))
+                        sensorValue = 10000
+                    else
+                        sensorValue = 0
+                break;
+            }
+
+            switch(check)
+            {
+                case KCheck.equal:
+                if (sensorValue == value)
+                    abbruch = 1
+                break;
+                case KCheck.lessThan:
+                if (sensorValue < value)
+                    abbruch = 1
+                break;
+                case KCheck.greaterThan:
+                if (sensorValue > value)
+                    abbruch = 1
+                break;
+            }
+        }
     }
 }
