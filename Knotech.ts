@@ -87,11 +87,30 @@ namespace Callibot {
         }
     }
 
-    //% blockId=K_Wait block="Warte bis |%state"
-    export function waitUntil(state: boolean) {
-        while (!state);
+    //% speed.min=5 speed.max=100
+    //% blockId=K_motor block="Schalte Motor |%KMotor| |%KDir| mit |%number| %"
+    export function motor(nr: KMotor, direction: KDir, speed: number) {
+        if (speed > 100) {
+            speed = 100
+        }
+        if (speed < 0) {
+            speed = 0
+        }
+        speed = speed * 255 / 100
+        writeMotor(nr, direction, speed);
     }
-
+    
+    //="Stoppe Motor $nr"
+    //% blockId=K_motorStop block="Stoppe Motor |%nr| |%mode"
+    export function motorStop(nr: KMotor, mode: KStop) {
+        if (mode == KStop.Frei) {
+            writeMotor(nr, 0, 1);
+        }
+        else {
+            writeMotor(nr, 0, 0);
+        }
+    }
+    
     //% blockId=K_SetLed block="Schalte LED |%KSensor| |%KState"
     export function setLed(led: KSensor, state: KState) {
         let buffer = pins.createBuffer(2);
@@ -219,29 +238,5 @@ namespace Callibot {
         let buffer = pins.i2cReadBuffer(0x21, 3);
         KInit();
         return 256 * buffer[1] + buffer[2];
-    }
-
-    //="Stoppe Motor $nr"
-    //% blockId=K_motorStop block="Stoppe Motor |%nr| |%mode"
-    export function motorStop(nr: KMotor, mode: KStop) {
-        if (mode == KStop.Frei) {
-            writeMotor(nr, 0, 1);
-        }
-        else {
-            writeMotor(nr, 0, 0);
-        }
-    }
-
-    //% speed.min=5 speed.max=100
-    //% blockId=K_motor block="Schalte Motor |%KMotor| |%KDir| mit |%number| %"
-    export function motor(nr: KMotor, direction: KDir, speed: number) {
-        if (speed > 100) {
-            speed = 100
-        }
-        if (speed < 0) {
-            speed = 0
-        }
-        speed = speed * 255 / 100
-        writeMotor(nr, direction, speed);
     }
 }
