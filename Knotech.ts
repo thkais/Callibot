@@ -303,6 +303,7 @@ namespace Callibot {
         let abbruch = 0
         let sensorValue = 0
         while (abbruch == 0) {
+            basic.pause(10)
             switch (sensor) {
                 case KSensorWait.distance:
                     sensorValue = entfernung()
