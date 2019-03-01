@@ -162,18 +162,18 @@ namespace Callibot {
         switch (led) {
             case KSensor.links:
                 if (state == KState.an) {
-                    KLedState |= 0x01;
+                    KLedState |= 0x01
                 }
                 else {
-                    KLedState &= 0xFE;
+                    KLedState &= 0xFE
                 }
                 break;
             case KSensor.rechts:
                 if (state == KState.an) {
-                    KLedState |= 0x02;
+                    KLedState |= 0x02
                 }
                 else {
-                    KLedState &= 0xFD;
+                    KLedState &= 0xFD
                 }
 
                 break;
@@ -202,25 +202,25 @@ namespace Callibot {
 
         switch (color) {
             case KRgbColor.rot:
-                tColor = 0x02;
+                tColor = 0x02
                 break;
             case KRgbColor.grün:
-                tColor = 0x01;
+                tColor = 0x01
                 break;
             case KRgbColor.blau:
-                tColor = 0x04;
+                tColor = 0x04
                 break;
             case KRgbColor.gelb:
-                tColor = 0x03;
+                tColor = 0x03
                 break;
             case KRgbColor.türkis:
-                tColor = 0x05;
+                tColor = 0x05
                 break;
             case KRgbColor.violett:
-                tColor = 0x06;
+                tColor = 0x06
                 break;
             case KRgbColor.weiß:
-                tColor = 0x07;
+                tColor = 0x07
                 break;
         }
         switch (led) {
@@ -245,15 +245,15 @@ namespace Callibot {
                 len = 5;
                 break;
         }
-        let buffer = pins.createBuffer(len);
+        let buffer = pins.createBuffer(len)
         buffer[0] = index;
-        buffer[1] = intensity | tColor;
+        buffer[1] = intensity | tColor
         if (len == 5) {
             buffer[2] = buffer[1];
             buffer[3] = buffer[1];
             buffer[4] = buffer[1];
         }
-        pins.i2cWriteBuffer(0x21, buffer);
+        pins.i2cWriteBuffer(0x21, buffer)
     }
 
     //="Liniensensor $sensor"
@@ -261,13 +261,14 @@ namespace Callibot {
     export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
 
+        basic.pause(10)
         let buffer = pins.i2cReadBuffer(0x21, 1);
         KInit();
         if (sensor == KSensor.links) {
-            buffer[0] &= 0x02;
+            buffer[0] &= 0x02
         }
         if (sensor == KSensor.rechts) {
-            buffer[0] &= 0x01;
+            buffer[0] &= 0x01
         }
         switch (status) {
             case KSensorStatus.hell:
@@ -292,9 +293,10 @@ namespace Callibot {
 
     //% blockId=K_entfernung block="Entfernung (mm)" blockGap=8
     export function entfernung(): number {
-        let buffer = pins.i2cReadBuffer(0x21, 3);
-        KInit();
-        return 256 * buffer[1] + buffer[2];
+        let buffer = pins.i2cReadBuffer(0x21, 3)
+        KInit()
+        basic.pause(10)
+        return 256 * buffer[1] + buffer[2]
     }
 
 
@@ -303,7 +305,6 @@ namespace Callibot {
         let abbruch = 0
         let sensorValue = 0
         while (abbruch == 0) {
-            basic.pause(10)
             switch (sensor) {
                 case KSensorWait.distance:
                     sensorValue = entfernung()
