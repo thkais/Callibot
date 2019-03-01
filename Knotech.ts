@@ -96,7 +96,7 @@ enum KCheck {
     greaterThan
 }
 
-//% color="#ff0000" icon="\uf013" block="Calli:bot"
+//% color="#A00000" icon="\uf013" block="Calli:bot"
 namespace Callibot {
 
     function KInit() {
