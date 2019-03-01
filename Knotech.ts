@@ -351,7 +351,6 @@ namespace Callibot {
                     sensorValue = input.temperature()
                     break;
             }
-
             switch (check) {
                 case KCheck.equal:
                     if (sensorValue == value)
