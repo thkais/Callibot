@@ -299,7 +299,6 @@ namespace Callibot {
         return 256 * buffer[1] + buffer[2]
     }
 
-
     //% blockId=K_warte block="Warte bis |%sensor| |%check| |%value"
     export function warte(sensor: KSensorWait, check: KCheck, value: number) {
         let abbruch = 0
@@ -367,6 +366,13 @@ namespace Callibot {
                         abbruch = 1
                     break;
             }
+        }
+    }
+
+    //% blockId=K_warte_LSensor block="Warte bis Liniensensor |%sensor| = |%status"
+    export function warteLSensor(sensor: KSensor, status: KSensorStatus) {
+
+        while (!(readLineSensor(sensor, status))) {
         }
     }
 }
