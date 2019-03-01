@@ -96,7 +96,7 @@ enum KCheck {
     greaterThan
 }
 
-//% color="#ff0000" icon="\uf013"
+//% color="#ff0000" icon="\uf013" block="Calli:bot"
 namespace Callibot {
 
     function KInit() {
@@ -258,7 +258,7 @@ namespace Callibot {
 
     //="Liniensensor $sensor"
     //% blockId K_readLineSensor block="Liniensensor |%sensor| |%"
-    export function readLineSensor(sensor: KSensor, status: KSensorStatus ):boolean {
+    export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
 
         let buffer = pins.i2cReadBuffer(0x21, 1);
@@ -269,8 +269,7 @@ namespace Callibot {
         if (sensor == KSensor.rechts) {
             buffer[0] &= 0x01;
         }
-        switch (status)
-        {
+        switch (status) {
             case KSensorStatus.hell:
                 if (buffer[0] != 0) {
                     result = true
@@ -278,7 +277,7 @@ namespace Callibot {
                 else {
                     result = false
                 }
-            break
+                break
             case KSensorStatus.dunkel:
                 if (buffer[0] == 0) {
                     result = true
@@ -286,7 +285,7 @@ namespace Callibot {
                 else {
                     result = false
                 }
-            break
+                break
         }
         return result
     }
@@ -297,7 +296,7 @@ namespace Callibot {
         KInit();
         return 256 * buffer[1] + buffer[2];
     }
-    
+
 
     //% blockId=K_warte block="Warte bis |%sensor| |%check| |%value"
     export function warte(sensor: KSensorWait, check: KCheck, value: number) {
