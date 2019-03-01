@@ -20,6 +20,11 @@ enum KSensor {
     rechts
 }
 
+enum KSensorStatus {
+    hell,
+    dunkel
+}
+
 enum KRgbLed {
     //% block="links vorne"
     LV,
@@ -252,8 +257,10 @@ namespace Callibot {
     }
 
     //="Liniensensor $sensor"
-    //% blockId K_readLineSensor block="Liniensensor |%sensor"
-    export function readLineSensor(sensor: KSensor): boolean {
+    //% blockId K_readLineSensor block="Liniensensor |%sensor| |%"
+    export function readLineSensor(sensor: KSensor, status: KSensorStatus ):boolean {
+        let result = false
+
         let buffer = pins.i2cReadBuffer(0x21, 1);
         KInit();
         if (sensor == KSensor.links) {
@@ -262,12 +269,26 @@ namespace Callibot {
         if (sensor == KSensor.rechts) {
             buffer[0] &= 0x01;
         }
-        if (buffer[0] != 0) {
-            return true;
+        switch (status)
+        {
+            case KSensorStatus.hell:
+                if (buffer[0] != 0) {
+                    result = true
+                }
+                else {
+                    result = false
+                }
+            break
+            case KSensorStatus.dunkel:
+                if (buffer[0] == 0) {
+                    result = true
+                }
+                else {
+                    result = false
+                }
+            break
         }
-        else {
-            return false;
-        }
+        return result
     }
 
     //% blockId=K_entfernung block="Entfernung (mm)" blockGap=8
@@ -288,13 +309,13 @@ namespace Callibot {
                     sensorValue = entfernung()
                     break;
                 case KSensorWait.lineLeft:
-                    if (readLineSensor(KSensor.links))
+                    if (readLineSensor(KSensor.links, KSensorStatus.hell))
                         sensorValue = 1
                     else
                         sensorValue = 0
                     break;
                 case KSensorWait.lineRight:
-                    if (readLineSensor(KSensor.rechts))
+                    if (readLineSensor(KSensor.rechts, KSensorStatus.hell))
                         sensorValue = 1
                     else
                         sensorValue = 0
