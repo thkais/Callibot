@@ -96,7 +96,7 @@ enum KCheck {
     greaterThan
 }
 
-//% color="#A00000" icon="\uf013" block="Calli:bot"
+//% color="#FF0000" icon="\uf013" block="Calli:bot"
 namespace Callibot {
 
     function KInit() {
@@ -257,7 +257,7 @@ namespace Callibot {
     }
 
     //="Liniensensor $sensor"
-    //% blockId K_readLineSensor block="Liniensensor |%sensor| |%"
+    //% blockId K_readLineSensor block="Liniensensor |%sensor| |%status"
     export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
 
