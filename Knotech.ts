@@ -99,8 +99,8 @@ namespace Callibot {
     function KInit() {
         if (KInitialized != 1) {
             KInitialized = 1;
-            setLed(KSensor.links, KState.aus);
-            setLed(KSensor.rechts, KState.aus);
+            setLed(KMotor.links, KState.aus);
+            setLed(KMotor.rechts, KState.aus);
             motorStop(KMotor.beide, KStop.Bremsen);
             setRgbLed(KRgbLed.All, KRgbColor.rot, 0);
         }
@@ -152,14 +152,14 @@ namespace Callibot {
     }
 
     //% blockId=K_SetLed block="Schalte LED |%KSensor| |%KState"
-    export function setLed(led: KSensor, state: KState) {
+    export function setLed(led: KMotor, state: KState) {
         let buffer = pins.createBuffer(2)
         KInit()
         basic.pause(10)
         buffer[0] = 0;      // SubAddress of LEDs
         //buffer[1]  Bit 0/1 = state of LEDs
         switch (led) {
-            case KSensor.links:
+            case KMotor.links:
                 if (state == KState.an) {
                     KLedState |= 0x01
                 }
@@ -167,14 +167,21 @@ namespace Callibot {
                     KLedState &= 0xFE
                 }
                 break;
-            case KSensor.rechts:
+            case KMotor.rechts:
                 if (state == KState.an) {
                     KLedState |= 0x02
                 }
                 else {
                     KLedState &= 0xFD
                 }
-
+                break;
+            case KMotor.beide:
+                if (state == KState.an) {
+                    KLedState |= 0x03
+                }
+                else {
+                    KLedState &= 0xFC
+                }
                 break;
         }
         buffer[1] = KLedState;
@@ -358,7 +365,6 @@ namespace Callibot {
 
     //% blockId=K_warte_LSensor color="#00A4A6" block="Warte bis Liniensensor |%sensor| = |%status"
     export function warteLSensor(sensor: KSensor, status: KSensorStatus) {
-
         while (!(readLineSensor(sensor, status))) {
         }
     }
