@@ -363,7 +363,7 @@ namespace Callibot {
         }
     }
 
-    //% blockID=K_Fernsteuerung_Empfaenger color="#E3008C" block="Fernsteuerung Empfänger Gruppe |%gruppe"
+    //% blockId=K_Fernsteuerung_Empfaenger color="#E3008C" block="Fernsteuerung Empfänger Gruppe |%gruppe"
     export function empfaenger(gruppe: number) {
         let Zeit = 0
         let MotorRechts = 0
@@ -400,7 +400,7 @@ namespace Callibot {
         }
     }
 
-    //% blockID=K_Fernsteuerung_Sender color="#E3008C" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
+    //% blockId=K_Fernsteuerung_Sender color="#E3008C" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
     export function sender(gruppe: number, staerke: number) {
         let MotorRechts = 0
         let MotorLinks = 0
