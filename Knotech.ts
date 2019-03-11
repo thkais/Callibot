@@ -1,6 +1,7 @@
 
 let KInitialized = 0
 let KLedState = 0
+//let KFunkInitialized = 0
 
 enum KMotor {
     links,
@@ -110,8 +111,9 @@ namespace Callibot {
     }
 
     function writeMotor(nr: KMotor, direction: KDir, speed: number) {
-        let buffer = pins.createBuffer(3);
-        KInit();
+        let buffer = pins.createBuffer(3)
+        KInit()
+        basic.pause(10)
         buffer[1] = direction;
         buffer[2] = speed;
         switch (nr) {
@@ -155,8 +157,9 @@ namespace Callibot {
 
     //% blockId=K_SetLed block="Schalte LED |%KSensor| |%KState"
     export function setLed(led: KSensor, state: KState) {
-        let buffer = pins.createBuffer(2);
-        KInit();
+        let buffer = pins.createBuffer(2)
+        KInit()
+        basic.pause(10)
         buffer[0] = 0;      // SubAddress of LEDs
         //buffer[1]  Bit 0/1 = state of LEDs
         switch (led) {
@@ -189,7 +192,8 @@ namespace Callibot {
         let index = 0;
         let len = 0;
 
-        KInit();
+        KInit()
+        basic.pause(10)
         if (intensity < 0) {
             intensity = 0;
         }
@@ -372,6 +376,79 @@ namespace Callibot {
     export function warteLSensor(sensor: KSensor, status: KSensorStatus) {
 
         while (!(readLineSensor(sensor, status))) {
+        }
+    }
+
+    //% blockID=K_Fernsteuerung_Sender color="#00FF00" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
+    export function sender(gruppe: number, staerke: number) {
+        let MotorRechts = 0
+        let MotorLinks = 0
+        let WertY = 0
+        let AccelY = 0
+        let WertX = 0
+        let AccelX = 0
+
+        radio.setTransmitPower(staerke)
+        radio.setGroup(gruppe)
+
+        while (1 == 1) {
+            AccelX = input.acceleration(Dimension.X)
+            if (AccelX > 100) {
+                WertX = (AccelX - 100) / 5
+            } else if (AccelX < -100) {
+                WertX = (AccelX + 100) / 5
+            } else {
+                WertX = 0
+            }
+            AccelY = input.acceleration(Dimension.Y)
+            if (AccelY > 100) {
+                WertY = (AccelY - 100) / 5
+            } else if (AccelY < -100) {
+                WertY = (AccelY + 100) / 5
+            } else {
+                WertY = 0
+            }
+            MotorLinks = WertY + WertX
+            MotorRechts = WertY - WertX
+            radio.sendValue("L", MotorLinks)
+            radio.sendValue("R", MotorRechts)
+        }
+    }
+
+    //% blockID=K_Fernsteuerung_Empfaenger color="#00FF00" block="Fernsteuerung Empfänger Gruppe |%gruppe"
+    export function empfaenger(gruppe: number) {
+        let Zeit = 0
+        let MotorRechts = 0
+        let MotorLinks = 0
+        radio.onDataPacketReceived(({ receivedString: name, receivedNumber: wert }) => {
+            if (name == "L") {
+                MotorLinks = wert
+            }
+            if (name == "R") {
+                MotorRechts = wert
+            }
+            Zeit = 50
+        })
+        radio.setTransmitPower(7)
+        radio.setGroup(0)
+        while(1 == 1){
+            if (MotorLinks < 0) {
+                Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(MotorLinks))
+            } else {
+                Callibot.motor(KMotor.rechts, KDir.rückwärts, MotorLinks)
+            }
+            if (MotorRechts < 0) {
+                Callibot.motor(KMotor.links, KDir.vorwärts, Math.abs(MotorRechts))
+            } else {
+                Callibot.motor(KMotor.links, KDir.rückwärts, MotorRechts)
+            }
+            basic.pause(1)
+            if (Zeit > 0) {
+                Zeit += -1
+            } else {
+                MotorLinks = 0
+                MotorRechts = 0
+            }
         }
     }
 }
