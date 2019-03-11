@@ -377,8 +377,7 @@ namespace Callibot {
             }
             Zeit = 50
         })
-        radio.setTransmitPower(7)
-        radio.setGroup(0)
+        radio.setGroup(gruppe)
         while (1 == 1) {
             if (MotorLinks < 0) {
                 Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(MotorLinks))
