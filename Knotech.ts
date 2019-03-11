@@ -396,7 +396,6 @@ namespace Callibot {
             } else {
                 MotorLinks = 0
                 MotorRechts = 0
-
             }
         }
     }
