@@ -363,42 +363,6 @@ namespace Callibot {
         }
     }
 
-    //% blockID=K_Fernsteuerung_Sender color="#E3008C" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
-    export function sender(gruppe: number, staerke: number) {
-        let MotorRechts = 0
-        let MotorLinks = 0
-        let WertY = 0
-        let AccelY = 0
-        let WertX = 0
-        let AccelX = 0
-
-        radio.setTransmitPower(staerke)
-        radio.setGroup(gruppe)
-
-        while (1 == 1) {
-            AccelX = input.acceleration(Dimension.X)
-            if (AccelX > 100) {
-                WertX = (AccelX - 100) / 5
-            } else if (AccelX < -100) {
-                WertX = (AccelX + 100) / 5
-            } else {
-                WertX = 0
-            }
-            AccelY = input.acceleration(Dimension.Y)
-            if (AccelY > 100) {
-                WertY = (AccelY - 100) / 5
-            } else if (AccelY < -100) {
-                WertY = (AccelY + 100) / 5
-            } else {
-                WertY = 0
-            }
-            MotorLinks = WertY + WertX
-            MotorRechts = WertY - WertX
-            radio.sendValue("L", MotorLinks)
-            radio.sendValue("R", MotorRechts)
-        }
-    }
-
     //% blockID=K_Fernsteuerung_Empfaenger color="#E3008C" block="Fernsteuerung Empfänger Gruppe |%gruppe"
     export function empfaenger(gruppe: number) {
         let Zeit = 0
@@ -436,4 +400,42 @@ namespace Callibot {
             }
         }
     }
+
+    //% blockID=K_Fernsteuerung_Sender color="#E3008C" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
+    export function sender(gruppe: number, staerke: number) {
+        let MotorRechts = 0
+        let MotorLinks = 0
+        let WertY = 0
+        let AccelY = 0
+        let WertX = 0
+        let AccelX = 0
+
+        radio.setTransmitPower(staerke)
+        radio.setGroup(gruppe)
+
+        while (1 == 1) {
+            AccelX = input.acceleration(Dimension.X)
+            if (AccelX > 100) {
+                WertX = (AccelX - 100) / 5
+            } else if (AccelX < -100) {
+                WertX = (AccelX + 100) / 5
+            } else {
+                WertX = 0
+            }
+            AccelY = input.acceleration(Dimension.Y)
+            if (AccelY > 100) {
+                WertY = (AccelY - 100) / 5
+            } else if (AccelY < -100) {
+                WertY = (AccelY + 100) / 5
+            } else {
+                WertY = 0
+            }
+            MotorLinks = WertY + WertX
+            MotorRechts = WertY - WertX
+            radio.sendValue("L", MotorLinks)
+            radio.sendValue("R", MotorRechts)
+        }
+    }
+
+
 }
