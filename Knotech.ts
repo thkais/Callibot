@@ -1,10 +1,7 @@
 
 let KInitialized = 0
 let KLedState = 0
-let KFunkInitialized = 0
-let KZeit = 0
-let KMotorRechts = 0
-let KMotorLinks = 0
+//let KFunkInitialized = 0
 
 enum KMotor {
     links,
@@ -349,77 +346,73 @@ namespace Callibot {
 
     //% blockId=K_Fernsteuerung_Empfaenger color="#E3008C" block="Fernsteuerung Empfänger Gruppe |%gruppe"
     export function empfaenger(gruppe: number) {
-
+        let Zeit = 0
+        let MotorRechts = 0
+        let MotorLinks = 0
         radio.onDataPacketReceived(({ receivedString: name, receivedNumber: wert }) => {
             if (name == "L") {
-                KMotorLinks = wert
+                MotorLinks = wert
             }
             if (name == "R") {
-                KMotorRechts = wert
+                MotorRechts = wert
             }
-            KZeit = 50
+            Zeit = 50
         })
         radio.setGroup(gruppe)
-
-        KFunkInitialized = 2
-
+        while (1 == 1) {
+            if (MotorLinks < 0) {
+                Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(MotorLinks))
+            } else {
+                Callibot.motor(KMotor.rechts, KDir.rückwärts, MotorLinks)
+            }
+            if (MotorRechts < 0) {
+                Callibot.motor(KMotor.links, KDir.vorwärts, Math.abs(MotorRechts))
+            } else {
+                Callibot.motor(KMotor.links, KDir.rückwärts, MotorRechts)
+            }
+            basic.pause(1)
+            if (Zeit > 0) {
+                Zeit += -1
+            } else {
+                MotorLinks = 0
+                MotorRechts = 0
+            }
+        }
     }
 
     //% blockId=K_Fernsteuerung_Sender color="#E3008C" block="Fernsteuerung Sender Gruppe |%gruppe| Übertragungsstärke |%staerke"
     export function sender(gruppe: number, staerke: number) {
-        radio.setTransmitPower(staerke)
-        radio.setGroup(gruppe)
-        KFunkInitialized = 1
-    }
-    
-    control.inBackground(function () {
+        let MotorRechts = 0
+        let MotorLinks = 0
         let WertY = 0
         let AccelY = 0
         let WertX = 0
         let AccelX = 0
 
-        if (KFunkInitialized == 1){
-                AccelX = input.acceleration(Dimension.X)
-                if (AccelX > 100) {
-                    WertX = (AccelX - 100) / 5
-                } else if (AccelX < -100) {
-                    WertX = (AccelX + 100) / 5
-                } else {
-                    WertX = 0
-                }
-                AccelY = input.acceleration(Dimension.Y)
-                if (AccelY > 100) {
-                    WertY = (AccelY - 100) / 5
-                } else if (AccelY < -100) {
-                    WertY = (AccelY + 100) / 5
-                } else {
-                    WertY = 0
-                }
-                KMotorLinks = WertY + WertX
-                KMotorRechts = WertY - WertX
-                radio.sendValue("L", KMotorLinks)
-                radio.sendValue("R", KMotorRechts)      
-        }
+        radio.setTransmitPower(staerke)
+        radio.setGroup(gruppe)
 
-        if (KFunkInitialized == 2){
- 
-            if (KMotorLinks < 0) {
-                Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(KMotorLinks))
+        while (1 == 1) {
+            AccelX = input.acceleration(Dimension.X)
+            if (AccelX > 100) {
+                WertX = (AccelX - 100) / 5
+            } else if (AccelX < -100) {
+                WertX = (AccelX + 100) / 5
             } else {
-                Callibot.motor(KMotor.rechts, KDir.rückwärts, KMotorLinks)
+                WertX = 0
             }
-            if (KMotorRechts < 0) {
-                Callibot.motor(KMotor.links, KDir.vorwärts, Math.abs(KMotorRechts))
+            AccelY = input.acceleration(Dimension.Y)
+            if (AccelY > 100) {
+                WertY = (AccelY - 100) / 5
+            } else if (AccelY < -100) {
+                WertY = (AccelY + 100) / 5
             } else {
-                Callibot.motor(KMotor.links, KDir.rückwärts, KMotorRechts)
+                WertY = 0
             }
-            basic.pause(1)
-            if (KZeit > 0) {
-                KZeit += -1
-            } else {
-                KMotorLinks = 0
-                KMotorRechts = 0
-            }
+            MotorLinks = WertY + WertX
+            MotorRechts = WertY - WertX
+            radio.sendValue("L", MotorLinks)
+            radio.sendValue("R", MotorRechts)
         }
-    })
+    }
 }
