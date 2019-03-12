@@ -66,22 +66,12 @@ enum KSensorWait {
     brightness,
     //% block="Temperatur"
     temperature,
-    //% block="Kompass"
-    compass,
-    //% block="Magnetkraft"
-    magnet,
-    //% block="Rotation"
-    rotation,
-    //% block="Rollen"
-    roll,
     //% block="Beschleunigung X"
     accellX,
     //% block="Beschleunigung Y"
     accellY,
     //% block="Beschleunigung Z"
-    accellZ,
-    //% block="Beschleunigung Stärke"
-    accellStrength
+    accellZ
 }
 
 enum KCheck {
@@ -306,7 +296,7 @@ namespace Callibot {
         return 256 * buffer[1] + buffer[2]
     }
 
-    //% blockId=K_warte color="#00A4A6" block="Warte bis |%sensor| |%check| |%value"
+    //% blockId=K_warte color="#0082E6" block="Warte bis |%sensor| |%check| |%value"
     export function warte(sensor: KSensorWait, check: KCheck, value: number) {
         let abbruch = 0
         let sensorValue = 0
@@ -314,9 +304,6 @@ namespace Callibot {
             switch (sensor) {
                 case KSensorWait.distance:
                     sensorValue = entfernung()
-                    break;
-                case KSensorWait.accellStrength:
-                    sensorValue = input.acceleration(Dimension.Strength)
                     break;
                 case KSensorWait.accellX:
                     sensorValue = input.acceleration(Dimension.X)
@@ -329,18 +316,6 @@ namespace Callibot {
                     break;
                 case KSensorWait.brightness:
                     sensorValue = input.lightLevel()
-                    break;
-                case KSensorWait.compass:
-                    sensorValue = input.compassHeading()
-                    break;
-                case KSensorWait.magnet:
-                    sensorValue = input.magneticForce(Dimension.Strength)
-                    break;
-                case KSensorWait.roll:
-                    sensorValue = input.rotation(Rotation.Roll)
-                    break;
-                case KSensorWait.rotation:
-                    sensorValue = input.rotation(Rotation.Pitch)
                     break;
                 case KSensorWait.temperature:
                     sensorValue = input.temperature()
@@ -363,7 +338,7 @@ namespace Callibot {
         }
     }
 
-    //% blockId=K_warte_LSensor color="#00A4A6" block="Warte bis Liniensensor |%sensor| = |%status"
+    //% blockId=K_warte_LSensor color="#0082E6" block="Warte bis Liniensensor |%sensor| = |%status"
     export function warteLSensor(sensor: KSensor, status: KSensorStatus) {
         while (!(readLineSensor(sensor, status))) {
         }
