@@ -1,6 +1,7 @@
 
 let KInitialized = 0
 let KLedState = 0
+let KFunkAktiv = 0
 //let KFunkInitialized = 0
 
 enum KMotor {
@@ -24,6 +25,11 @@ enum KSensor {
 enum KSensorStatus {
     hell,
     dunkel
+}
+
+enum KFunk {
+    an,
+    aus
 }
 
 enum KRgbLed {
@@ -360,22 +366,24 @@ namespace Callibot {
         })
         radio.setGroup(gruppe)
         while (1 == 1) {
-            if (MotorLinks < 0) {
-                Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(MotorLinks))
-            } else {
-                Callibot.motor(KMotor.rechts, KDir.rückwärts, MotorLinks)
-            }
-            if (MotorRechts < 0) {
-                Callibot.motor(KMotor.links, KDir.vorwärts, Math.abs(MotorRechts))
-            } else {
-                Callibot.motor(KMotor.links, KDir.rückwärts, MotorRechts)
-            }
-            basic.pause(1)
-            if (Zeit > 0) {
-                Zeit += -1
-            } else {
-                MotorLinks = 0
-                MotorRechts = 0
+            if (KFunkAktiv == 0){
+                if (MotorLinks < 0) {
+                    Callibot.motor(KMotor.rechts, KDir.vorwärts, Math.abs(MotorLinks))
+                } else {
+                    Callibot.motor(KMotor.rechts, KDir.rückwärts, MotorLinks)
+                }
+                if (MotorRechts < 0) {
+                    Callibot.motor(KMotor.links, KDir.vorwärts, Math.abs(MotorRechts))
+                } else {
+                    Callibot.motor(KMotor.links, KDir.rückwärts, MotorRechts)
+                }
+                basic.pause(1)
+                if (Zeit > 0) {
+                    Zeit += -1
+                } else {
+                    MotorLinks = 0
+                    MotorRechts = 0
+                }
             }
         }
     }
@@ -413,6 +421,16 @@ namespace Callibot {
             MotorRechts = WertY - WertX
             radio.sendValue("L", MotorLinks)
             radio.sendValue("R", MotorRechts)
+        }
+    }
+
+    //% blockId=K_Fernsteuerung_Status color="#E3008C" block="Schalte Empfänger |%status"
+    export function empfaengerStatus(status : KFunk) {
+        if (status == KFunk.an){
+            KFunkAktiv = 0
+        }
+        else {
+            KFunkAktiv = 1
         }
     }
 }
