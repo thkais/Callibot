@@ -32,6 +32,11 @@ enum KFunk {
     aus
 }
 
+enum KEinheit {
+    cm,
+    mm
+}
+
 enum KRgbLed {
     //% block="links vorne"
     LV,
@@ -66,7 +71,9 @@ enum KState {
 }
 
 enum KSensorWait {
-    //% block="Entfernung"
+    //% block="Entfernung (cm)"
+    distanceCm,
+    //% block="Entfernung (mm)"
     distance,
     //% block="Helligkeit"
     brightness,
@@ -105,7 +112,6 @@ namespace Callibot {
     function writeMotor(nr: KMotor, direction: KDir, speed: number) {
         let buffer = pins.createBuffer(3)
         KInit()
-        basic.pause(10)
         buffer[1] = direction;
         buffer[2] = speed;
         switch (nr) {
@@ -151,7 +157,6 @@ namespace Callibot {
     export function setLed(led: KMotor, state: KState) {
         let buffer = pins.createBuffer(2)
         KInit()
-        basic.pause(10)
         buffer[0] = 0;      // SubAddress of LEDs
         //buffer[1]  Bit 0/1 = state of LEDs
         switch (led) {
@@ -185,14 +190,13 @@ namespace Callibot {
     }
 
     //% intensity.min=0 intensity.max=8
-    //% blockId=K_RGB_LED block="Schalte Beleuchtung |%led| Farbe|%color| Helligkeit|%intensity|"
+    //% blockId=K_RGB_LED block="Schalte Beleuchtung |%led| Farbe|%color| Helligkeit|%intensity|(0..8)"
     export function setRgbLed(led: KRgbLed, color: KRgbColor, intensity: number) {
         let tColor = 0;
         let index = 0;
         let len = 0;
 
         KInit()
-        basic.pause(10)
         if (intensity < 0) {
             intensity = 0;
         }
@@ -256,15 +260,15 @@ namespace Callibot {
             buffer[3] = buffer[1];
             buffer[4] = buffer[1];
         }
-        pins.i2cWriteBuffer(0x21, buffer)
+        pins.i2cWriteBuffer(0x21, buffer);
+        basic.pause(10);
     }
 
     //="Liniensensor $sensor"
     //% blockId K_readLineSensor block="Liniensensor |%sensor| |%status"
     export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
-
-        basic.pause(10)
+        
         let buffer = pins.i2cReadBuffer(0x21, 1);
         KInit();
         if (sensor == KSensor.links) {
@@ -294,12 +298,16 @@ namespace Callibot {
         return result
     }
 
-    //% blockId=K_entfernung block="Entfernung (mm)" blockGap=8
-    export function entfernung(): number {
+    //% blockId=K_entfernung block="Entfernung |%modus" blockGap=8
+    export function entfernung(modus: KEinheit): number {
         let buffer = pins.i2cReadBuffer(0x21, 3)
         KInit()
-        basic.pause(10)
-        return 256 * buffer[1] + buffer[2]
+        if (modus == KEinheit.mm) {
+            return 256 * buffer[1] + buffer[2]
+        }
+        else {
+            return (256 * buffer[1] + buffer[2]) / 10
+        }
     }
 
     //% blockId=K_warte color="#0082E6" block="Warte bis |%sensor| |%check| |%value"
@@ -309,7 +317,10 @@ namespace Callibot {
         while (abbruch == 0) {
             switch (sensor) {
                 case KSensorWait.distance:
-                    sensorValue = entfernung()
+                    sensorValue = entfernung(KEinheit.mm)
+                    break;
+                case KSensorWait.distanceCm:
+                    sensorValue = entfernung(KEinheit.cm)
                     break;
                 case KSensorWait.accellX:
                     sensorValue = input.acceleration(Dimension.X)
