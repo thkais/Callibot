@@ -1,4 +1,4 @@
-// V1.0.4
+// V1.0.5
 let KInitialized = 0
 let KLedState = 0
 let KFunkAktiv = 0
@@ -265,7 +265,7 @@ namespace Callibot {
     }
 
     //="Liniensensor $sensor"
-    //% blockId K_readLineSensor color="#00C040" block="Liniensensor |%sensor| |%status"
+    //% blockId K_readLineSensor block="Liniensensor |%sensor| |%status"
     export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
         
@@ -298,7 +298,7 @@ namespace Callibot {
         return result
     }
 
-    //% blockId=K_entfernung color="#00C040" block="Entfernung |%modus" blockGap=8
+    //% blockId=K_entfernung block="Entfernung |%modus" blockGap=8
     export function entfernung(modus: KEinheit): number {
         let buffer = pins.i2cReadBuffer(0x21, 3)
         KInit()
