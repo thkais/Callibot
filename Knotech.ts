@@ -1,4 +1,4 @@
-// V1.0.21
+// V1.0.10
 let KInitialized = 0
 let KLedState = 0
 let KFunkAktiv = 0
@@ -15,6 +15,13 @@ enum KStop {
     Frei,
     //% block="bremsend"
     Bremsen
+}
+
+enum KnServo {
+    //% block="Nr.1"
+    Servo1,
+    //% block="Nr.2"
+    Servo2
 }
 
 enum KSensor {
@@ -96,8 +103,8 @@ enum KCheck {
     greaterThan
 }
 
-//% color="#FF0000" icon="\uf013" block="Calli:bot"
-namespace Callibot {
+//% color="#FF0000" icon="\uf013" block="Calli:bot (iPad)"
+namespace callibot_bt {
 
     function KInit() {
         if (KInitialized != 1) {
@@ -151,6 +158,28 @@ namespace Callibot {
         else {
             writeMotor(nr, 0, 0);
         }
+    }
+
+    //% pos.min=0 pos.max=180
+    //% blockId=K_Servo block="Bewege Servo |%nr| auf |%pos|°"
+    export function servo(nr: KnServo, pos: number) {
+        let buffer = pins.createBuffer(2)
+        if (pos < 0) {
+            pos = 0
+        }
+        if (pos > 180) {
+            pos = 180
+        }
+        switch (nr) {
+            case KnServo.Servo1:
+                buffer[0] = 0x14;
+                break;
+            case KnServo.Servo2:
+                buffer[0] = 0x15;
+                break;
+        }
+        buffer[1] = pos
+        pins.i2cWriteBuffer(0x20, buffer)
     }
 
     //% blockId=K_SetLed block="Schalte LED |%KSensor| |%KState"
@@ -265,10 +294,10 @@ namespace Callibot {
     }
 
     //="Liniensensor $sensor"
-    //% blockId K_readLineSensor block="Liniensensor |%sensor| |%status"
+    //% blockId K_readLineSensor color="#00C040" block="Liniensensor |%sensor| |%status"
     export function readLineSensor(sensor: KSensor, status: KSensorStatus): boolean {
         let result = false
-        
+
         let buffer = pins.i2cReadBuffer(0x21, 1);
         KInit();
         if (sensor == KSensor.links) {
@@ -298,7 +327,7 @@ namespace Callibot {
         return result
     }
 
-    //% blockId=K_entfernung block="Entfernung |%modus" blockGap=8
+    //% blockId=K_entfernung color="#00C040" block="Entfernung |%modus" blockGap=8
     export function entfernung(modus: KEinheit): number {
         let buffer = pins.i2cReadBuffer(0x21, 3)
         KInit()
